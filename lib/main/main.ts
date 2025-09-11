@@ -1,7 +1,6 @@
 import { app, BrowserWindow, ipcMain } from 'electron'
 import { electronApp, optimizer } from '@electron-toolkit/utils'
 import { createAppWindow } from './app'
-import { runBlenderForRenderingImages } from '../worker/blender'
 import { fetchJob } from '../worker/jobManager'
 import { HttpResponseStatus, UserInfo } from '../utils'
 import { login } from '../login/loginManager'
