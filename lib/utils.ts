@@ -29,3 +29,19 @@ export const enum HttpResponseStatus {
   BAD_REQUEST = 400,
   INTERNAL_SERVER_ERROR = 500
 }
+
+export type JobApiResponse = {
+  status: string;
+  url: string;
+  jobId: number;
+  projectId: number;
+  userId: string;
+  frame: number;
+}
+// }
+// "status", "successs",
+// 				"url", url,
+// 				"jobId", registeredJob.getJobId(),
+// 				"projectId", projectId,
+// 				"userId", userId,
+// 				"frame", frame));
