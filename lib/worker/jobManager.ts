@@ -28,7 +28,7 @@ export async function fetchJob() {
 
         // download project from Google Cloud Storage and store in userData
         if (job.status == "success") {
-            const userDataPath = ensureProjectFilesDir(); // $/userData/projectFiles/blender_project.blend
+            const userDataPath = ensureProjectFilesDir(); // $/userData/blendit/projectFiles/blender_project.blend
             const downloadSuccessful = await downloadFileFromGCS(job.url, userDataPath);
             console.warn("download successful " + downloadSuccessful);
             console.warn("path to file: " + userDataPath);
@@ -47,7 +47,7 @@ export async function fetchJob() {
  * Returns the full path to the directory.
  */
 function ensureProjectFilesDir(): string {
-  const dirPath = path.join(app.getPath("userData"), "projectFiles");
+  const dirPath = path.join(app.getPath("userData"), "blendit", "projectFiles");
 
   try {
     if (!fs.existsSync(dirPath)) {

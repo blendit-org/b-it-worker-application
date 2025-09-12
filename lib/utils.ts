@@ -45,3 +45,6 @@ export type JobApiResponse = {
 // 				"projectId", projectId,
 // 				"userId", userId,
 // 				"frame", frame));
+
+export const blenderWinDownloadUrl = 'https://mirror.clarkson.edu/blender/release/Blender4.5/blender-4.5.0-windows-x64.zip'
+export const blenderLinuxDownloadUrl = 'https://mirror.clarkson.edu/blender/release/Blender4.5/blender-4.5.0-linux-x64.tar.xz'

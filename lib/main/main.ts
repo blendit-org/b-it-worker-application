@@ -75,7 +75,7 @@ ipcMain.handle('login:request', async (_event, userInfo: UserInfo) => {
 
 ipcMain.handle('auth:is-token-expired', async (_event) => {
   const tokenExpireDate = await keytar.getPassword("org.blendit", "auth-token-expires-in");
-  console.warn("keytar: ", tokenExpireDate);
+  if(tokenExpireDate!=null){console.warn("keytar: ",tokenExpireDate," ", parseInt(tokenExpireDate)- (Date.now()));}
   // return false;
   if (tokenExpireDate != null && parseInt(tokenExpireDate) > Date.now()) {
     return true;
