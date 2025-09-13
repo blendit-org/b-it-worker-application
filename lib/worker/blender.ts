@@ -15,7 +15,7 @@ export async function runBlenderForRenderingImages(
     
     // Output directory of rendered image
     const userData = app.getPath('userData');
-    const outDir = ensureOutputDir(path.join(userData, 'projectFiles', "renderedImages"));
+    const outDir = ensureOutputDir(path.join(userData, 'blendit', "renderedImages"));
 
     // Where is blender binary?
     // const blenderDir = path.join(userData, "blender");
@@ -124,21 +124,37 @@ async function resolveBlenderExe() {
 }
 
 async function downloadFile(url: string, dest: string) {
-  const writer = fs.createWriteStream(dest);
-  const response = await axios.get(url, { responseType: "stream" });
-
-    return new Promise<void>((resolve, reject) => {
+    try {
+        
+        const response = await axios.get(
+            url, 
+            { 
+                responseType: "stream",
+                onDownloadProgress: (progressEvent) => {
+                    if (progressEvent.total != null) {
+                        const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                        console.warn("blender Download progress: ", percentCompleted);
+                    }
+                }
+            }
+        );
+        const writer = fs.createWriteStream(dest);
         response.data.pipe(writer);
-        let error: Error | null = null;
-        writer.on("error", err => {
-            error = err;
-            writer.close();
-            reject(err);
+        return new Promise<void>((resolve, reject) => {
+            
+            let error: Error | null = null;
+            writer.on("error", err => {
+                error = err;
+                writer.close();
+                reject(err);
+            });
+            writer.on("close", () => {
+                if (!error) resolve();
+            });
         });
-        writer.on("close", () => {
-            if (!error) resolve();
-        });
-    });
+    } catch (error) {
+        console.warn("there is an error downloading blender");
+    }
 }
 
 async function downloadBlenderArchive(destPath: string) {
@@ -147,7 +163,7 @@ async function downloadBlenderArchive(destPath: string) {
 
     if (process.platform === "win32") {
         url = blenderWinDownloadUrl;
-        archiveName = "blender.zip";
+        archiveName = "blender-4.5.0-windows-x64.zip";
     }else if (process.platform === "linux") {
         url = blenderLinuxDownloadUrl;
         archiveName = "blender.tar.xz";
@@ -155,15 +171,17 @@ async function downloadBlenderArchive(destPath: string) {
         url = blenderLinuxDownloadUrl;
         archiveName = "blender.zip";
     }
-    const archivePath = path.join(destPath, archiveName);
+    let archivePath = destPath;
 
     // ensure $userData/blendit exists
     if (!fs.existsSync(archivePath)) {
         fs.mkdirSync(archivePath, {recursive: true});
     }
 
+    archivePath = path.join(destPath, archiveName);
+
     console.warn("Downloading blender from " + url + " into " + archivePath);
-    await downloadFile(url, archivePath); // $userData/blendit/blender.zip
+    await downloadFile(url, archivePath); // $userData/blendit/
 
     console.warn("Extracting Blender...");
     if (archiveName.endsWith('.zip')) {

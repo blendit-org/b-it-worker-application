@@ -8,7 +8,7 @@ export function cn(...inputs: ClassValue[]) {
 
 export type Job = {
   id: string;
-  outputPattern: string;
+  outputPattern?: string;
   blendFileLocalPath: string;
   frame: number;
 }
@@ -37,7 +37,18 @@ export type JobApiResponse = {
   projectId: number;
   userId: string;
   frame: number;
+  fileName: string;
 }
+
+export type JobFileMetadata = {
+  workerId?: string;
+  userId: string;
+  projectId: number;
+  fileName: string;
+  frame: number;
+  jobId: number;
+}
+
 // }
 // "status", "successs",
 // 				"url", url,

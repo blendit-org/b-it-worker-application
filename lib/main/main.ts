@@ -6,6 +6,7 @@ import { HttpResponseStatus, UserInfo } from '../utils'
 import { login } from '../login/loginManager'
 
 import keytar from 'keytar'
+import { loop, stopWhenCurrentJobIsFinished } from '../worker/main'
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -44,12 +45,19 @@ app.on('window-all-closed', () => {
 // In this file, you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
 
-ipcMain.on('home:start-job', (_event, args) => {
-  console.warn("Hi from renderer, [home] got message", args);
+ipcMain.on('home:start-job', (_event, allowedCpuThreads) => {
+  console.warn("Hi from renderer, [home] got message", allowedCpuThreads);
   // runBlenderForRenderingImages((_event, msg) => {console.warn(msg)})
   // .then(() => {console.warn("finished rendering")})
 
-  fetchJob().then(() => console.warn('login post request done.')) // we are golden
+  loop(allowedCpuThreads);
+
+  //fetchJob().then(() => console.warn('login post request done.')) // we are golden
+})
+
+ipcMain.on('home:stop-job', (_event) => {
+  console.warn("[main] Stop job!");
+  stopWhenCurrentJobIsFinished();
 })
 
 ipcMain.handle('login:request', async (_event, userInfo: UserInfo) => {

@@ -6,9 +6,10 @@ import path from "path";
 import fs from "fs";
 
 export async function fetchJob() {
+    console.warn("fetch job called...");
 
     const token = await keytar.getPassword("org.blendit", "auth-token");
-    console.warn(token);
+    console.warn("[fetchJob] token:", token);
     // TODO: Fetch job from fileserver
     try {
         const response = await axios(
@@ -22,13 +23,13 @@ export async function fetchJob() {
                 }
             }
         )
-        console.warn(response.data);
+        console.warn("Response data from job-request api: ", response.data);
         const job : JobApiResponse = response.data;
         //console.warn(job.url + " " + job.frame + " " + job.jobId + " " +  job.projectId + " " + job.status + " " + job.userId)
 
         // download project from Google Cloud Storage and store in userData
         if (job.status == "success") {
-            const userDataPath = ensureProjectFilesDir(); // $/userData/blendit/projectFiles/blender_project.blend
+            const userDataPath = ensureProjectFilesDir(job.fileName); // $/userData/blendit/projectFiles/blender_project.blend
             const downloadSuccessful = await downloadFileFromGCS(job.url, userDataPath);
             console.warn("download successful " + downloadSuccessful);
             console.warn("path to file: " + userDataPath);
@@ -37,7 +38,8 @@ export async function fetchJob() {
         return null;
         
     } catch (error) {
-        console.error(error);
+        console.warn("hi there is an error at fetch Job");
+        //console.error(error);
         throw error;
     }
 }
@@ -46,7 +48,7 @@ export async function fetchJob() {
  * Ensures the projectFiles directory exists inside app.getPath("userData").
  * Returns the full path to the directory.
  */
-function ensureProjectFilesDir(): string {
+function ensureProjectFilesDir(fileName: string): string {
   const dirPath = path.join(app.getPath("userData"), "blendit", "projectFiles");
 
   try {
@@ -57,15 +59,19 @@ function ensureProjectFilesDir(): string {
     console.error("Failed to create projectFiles directory:", err);
     throw err;
   }
-  return path.join(dirPath, "blender_project.blend");
+  return path.join(dirPath, fileName);
 }
 
 async function downloadFileFromGCS(presignedUrl: string, localFilePath: string) {
     try {
         const response = await axios({
-            method: 'GET',
+            method: 'get',
             url: presignedUrl,
             responseType: 'stream',
+            onDownloadProgress: (progressEvent) => {
+                const percentCompleted = Math.round(progressEvent.loaded * 100 / (progressEvent.total ? progressEvent.total : 1));
+                console.warn("Project Download progress: ", percentCompleted);
+            }
         });
 
         const writer = fs.createWriteStream(localFilePath);
