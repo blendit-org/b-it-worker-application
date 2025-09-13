@@ -8,7 +8,7 @@ export function cn(...inputs: ClassValue[]) {
 
 export type Job = {
   id: string;
-  outputPattern: string;
+  outputPattern?: string;
   blendFileLocalPath: string;
   frame: number;
 }
@@ -37,7 +37,18 @@ export type JobApiResponse = {
   projectId: number;
   userId: string;
   frame: number;
+  fileName: string;
 }
+
+export type JobFileMetadata = {
+  workerId?: string;
+  userId: string;
+  projectId: number;
+  fileName: string;
+  frame: number;
+  jobId: number;
+}
+
 // }
 // "status", "successs",
 // 				"url", url,
@@ -45,3 +56,6 @@ export type JobApiResponse = {
 // 				"projectId", projectId,
 // 				"userId", userId,
 // 				"frame", frame));
+
+export const blenderWinDownloadUrl = 'https://mirror.clarkson.edu/blender/release/Blender4.5/blender-4.5.0-windows-x64.zip'
+export const blenderLinuxDownloadUrl = 'https://mirror.clarkson.edu/blender/release/Blender4.5/blender-4.5.0-linux-x64.tar.xz'

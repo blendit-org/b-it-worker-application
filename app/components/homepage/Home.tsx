@@ -6,14 +6,24 @@ import React from "react"
 
 const Home = () => {
   const [allowedCpuThreads, setAllowedCpuThreads] = React.useState([6]);
+  const [jobRunning, setJobRunning] = React.useState(false);
 
   const handleSliderChange = (value: number[]) => {
     setAllowedCpuThreads(value)
+    
+
   }
 
   const handleStartButtonPress = () => {
     console.warn("hiiii")
     window.api.send('home:start-job', allowedCpuThreads); // when start button pressed send cpu thread count user wants to use for rendering
+    setJobRunning(true)
+  }
+
+  const handleStopButtonPress = () => {
+    console.warn("hiiii")
+    window.api.send('home:stop-job'); // when start button pressed send cpu thread count user wants to use for rendering
+    setJobRunning(false)
   }
 
   return (
@@ -35,10 +45,16 @@ const Home = () => {
 
       {/* Buttons */}
       <div className="buttons flex gap-4">
-        <Button variant="default" size="lg" className="start-job-button" onClick={handleStartButtonPress}>
+        <Button 
+          variant={jobRunning ? "ghost" : "default"} 
+          size="lg" 
+          className="start-job-button" 
+          onClick={handleStartButtonPress}
+          disabled={jobRunning}
+        >
           Start Job
         </Button>
-        <Button variant="destructive" size="lg" className="stop-job-button">
+        <Button variant="destructive" size="lg" className="stop-job-button" onClick={handleStopButtonPress}>
           Stop Job
         </Button>
       </div>

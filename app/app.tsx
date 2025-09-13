@@ -19,10 +19,21 @@ export default function App() {
   }
 
   useEffect(()=>{
-    window.api.invoke('auth:is-token-expired')
-      .then((flag: boolean) => {
-        setAccessHome(flag);
+    const validateToken = () => {
+      window.api.invoke('auth:is-token-expired')
+        .then((flag: boolean) => {
+          setAccessHome(flag);
       })
+    };
+
+    // run on mount
+    validateToken();
+
+    window.api.receive("worker:start-render", validateToken);
+
+    return () => {
+      window.api.removeAllListeners("worker:start-render");
+    }
   },[])
 
   if (accessHome === false) {
