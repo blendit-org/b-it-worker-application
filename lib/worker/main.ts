@@ -54,7 +54,7 @@ export async function loop(allowedCpuThreads: number) {
             if (jobApiResponse == null) {
                 // wait 1 minute before sending another request to server to avoid overloading
                 console.warn("waiting 1 minute");
-                await new Promise(resolve => setTimeout(resolve, 60_000));
+                await new Promise(resolve => setTimeout(resolve, 15_000));
                 continue;
             }
 
@@ -132,11 +132,10 @@ export async function loop(allowedCpuThreads: number) {
             continue;
         }
 
-
-
         console.warn("wait 15 seconds before next loop start");
-        await new Promise(resolve => setTimeout(resolve, 15_000));
+        await new Promise(resolve => setTimeout(resolve, 3_000));
     }
+    globalMainWindow.webContents.send('main:stopped-after-finishing-job');
     console.warn("Job stopped!!!!");
 }
 

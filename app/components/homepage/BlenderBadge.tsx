@@ -1,6 +1,7 @@
 import { Badge } from "@/app/components/ui/badge"
 import { XCircle, CheckCircle2, Loader2 } from "lucide-react"
 import { useState, useEffect } from "react"
+import { Button } from "../ui/button"
 
 type BlenderStatus = "not-found" | "downloading" | "available"
 
@@ -8,15 +9,17 @@ export function BlenderBadge() {
   const [status, setStatus] = useState<BlenderStatus>("not-found")
   const [progress, setProgress] = useState(0)
 
-  // Example: fake download flow
   useEffect(() => {
     window.api.receive('blender:blender-download-progress', (progress: number) => {
         console.warn('downloading blender...', progress)
-        setStatus("downloading");
-        setProgress(progress);
+        setStatus("downloading")
+        setProgress(progress)
         if (progress == 100) {
             checkBlender()
         }
+    })
+    window.api.receive('main:blender-bin-available', () => {
+      setStatus("available")
     })
     const checkBlender = () => {
         window.api.invoke('worker:check-blender-bin')
@@ -28,6 +31,10 @@ export function BlenderBadge() {
     checkBlender()
 
   }, [])
+  
+  const handleDownloadBlender = () => {
+    window.api.send('blender-badge:download-blender');
+  }
 
   return (
     <Badge
@@ -43,6 +50,9 @@ export function BlenderBadge() {
         <>
           <XCircle className="size-4" />
           No Blender found
+          <Button 
+            onClick={handleDownloadBlender}
+          >Download Blender v4.5.3</Button>
         </>
       )}
 
