@@ -21,6 +21,9 @@ This application enables users to join the worker node. Just download the binary
 <img width="600" height="671" alt="image" src="https://github.com/user-attachments/assets/3b71fc6f-eb09-4b9f-b606-902ee7ac0ac2" />
 </p>
 
+<p align="center">
+<img width="604" height="668" alt="image" src="https://github.com/user-attachments/assets/d5de0048-e612-43c4-9dfc-3fb91fe6c0c9" />
+</p>
 
 
 <br />
