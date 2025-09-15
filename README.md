@@ -5,12 +5,16 @@
     <img src="resources/build/icon.svg" width="64" />
 </p>
 
+<img width="601" height="670" alt="image" src="https://github.com/user-attachments/assets/f4278f6a-7035-4515-84e1-a1fd0714fb34" />
+<img width="599" height="669" alt="image" src="https://github.com/user-attachments/assets/d022d516-a460-4a9f-b3ab-b6e2b83767b6" />
+
+
 A modern Electron application template with React, Vite, TypeScript, and TailwindCSS. This project provides a solid foundation for developing cross-platform desktop applications.
 
 <br />
 
 <p align="center">
-    <img src="app/assets/era-preview.png" target="_blank" />
+    
 </p>
 
 <p align="center">
