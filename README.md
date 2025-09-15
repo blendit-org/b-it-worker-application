@@ -1,25 +1,30 @@
-# Electron React App
+# blend:it Electron React App
 
 <br />
 <p align="center">
     <img src="resources/build/icon.svg" width="64" />
 </p>
 
-<img width="601" height="670" alt="image" src="https://github.com/user-attachments/assets/f4278f6a-7035-4515-84e1-a1fd0714fb34" />
-<img width="599" height="669" alt="image" src="https://github.com/user-attachments/assets/d022d516-a460-4a9f-b3ab-b6e2b83767b6" />
+<br/>
+blend:it is a distributed rendering platform. This is a cross-platform (Windows/Linux/MacOS[not tested]) application built on React, Electron and Vite.
+This application enables users to join the worker node. Just download the binary, log in and keep an active network connection.
+
+<br/>
+
+<br/>
+
+<p align="center">
+    <img width="601" height="670" alt="image" src="https://github.com/user-attachments/assets/f4278f6a-7035-4515-84e1-a1fd0714fb34" />
+</p>
+
+<p align="center">
+<img width="600" height="671" alt="image" src="https://github.com/user-attachments/assets/3b71fc6f-eb09-4b9f-b606-902ee7ac0ac2" />
+</p>
 
 
-A modern Electron application template with React, Vite, TypeScript, and TailwindCSS. This project provides a solid foundation for developing cross-platform desktop applications.
 
 <br />
 
-<p align="center">
-    
-</p>
-
-<p align="center">
-    <a href="https://imgur.com/B5pGkDk">Watch Video Preview</a>
-</p>
 
 <br />
 
