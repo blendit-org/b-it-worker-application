@@ -165,6 +165,7 @@ async function downloadFile(url: string, dest: string) {
         );
         const writer = fs.createWriteStream(dest);
         response.data.pipe(writer);
+        globalMainWindow.reload();
         return new Promise<void>((resolve, reject) => {
             
             let error: Error | null = null;

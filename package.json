@@ -1,12 +1,12 @@
 {
-  "name": "era",
-  "version": "11.0.0",
-  "description": "A modern Electron application template with React, Vite, TypeScript, Shadcn UI and TailwindCSS",
+  "name": "blendit",
+  "version": "0.0.1",
+  "description": "Get connected to blendit network to render blender projects and earn",
   "main": "./out/main/main.js",
   "license": "MIT",
   "author": {
-    "name": "Guasam",
-    "url": "https://github.com/guasam"
+    "name": "pritomash",
+    "url": "https://github.com/pritomshad"
   },
   "scripts": {
     "dev": "electron-vite dev -w",
@@ -26,7 +26,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/guasam/electron-react-app"
+    "url": "https://github.com/blendit-org/b-it-worker-application"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
