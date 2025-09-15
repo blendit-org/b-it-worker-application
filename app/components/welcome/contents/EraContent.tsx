@@ -8,7 +8,7 @@ const EraContent = () => {
   return (
     <div>
       <h2 className="flex items-center gap-4">
-        Electron React App
+        blendit-worker-application
         <div className="p-1 rounded-md bg-primary/10">
           <img src="res://icons/era.svg" className="w-4 h-4" />
         </div>

@@ -8,7 +8,8 @@ import os from "os"
 
 import keytar from 'keytar'
 import { loop, setCpuThreadsRuntime, stopWhenCurrentJobIsFinished } from '../worker/main'
-import { checkIfBlenderAvailableLocally } from '../worker/blender'
+import { checkIfBlenderAvailableLocally, downloadBlenderArchive } from '../worker/blender'
+import path from 'path'
 
 export let globalMainWindow: BrowserWindow;
 
@@ -55,9 +56,24 @@ ipcMain.on('home:start-job', (_event, allowedCpuThreads) => {
   // runBlenderForRenderingImages((_event, msg) => {console.warn(msg)})
   // .then(() => {console.warn("finished rendering")})
 
-  loop(allowedCpuThreads);
-
+  checkIfBlenderAvailableLocally().then( async (available: boolean) => {
+    if (!available) {
+      // const blenderPath = path.join(app.getPath('userData'), 'blendit', 'blender');
+      // await downloadBlenderArchive(blenderPath);
+      // await checkIfBlenderAvailableLocally();
+      // loop(allowedCpuThreads);
+    } else {
+      //globalMainWindow.webContents.send('main:blender-bin-available');
+      loop(allowedCpuThreads);
+    }
+  })
   //fetchJob().then(() => console.warn('login post request done.')) // we are golden
+})
+
+ipcMain.on('blender-badge:download-blender', async () => {
+  const blenderPath = path.join(app.getPath('userData'), 'blendit', 'blender');
+  await downloadBlenderArchive(blenderPath);
+  await checkIfBlenderAvailableLocally();
 })
 
 ipcMain.on('home:stop-job', (_event) => {

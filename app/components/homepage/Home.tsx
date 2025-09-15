@@ -15,6 +15,7 @@ const Home = () => {
   const [score, setScore] = React.useState(0)
   const [cpuInfo, setCpuInfo] = React.useState("no-cpu-info-found")
   const [ramInfo, setRamInfo] = React.useState("")
+  const [blenderAvailable, setBlenderAvailable] = React.useState(false)
 
   const handleSliderChange = (value: number[]) => {
     setAllowedCpuThreads(value)
@@ -30,7 +31,7 @@ const Home = () => {
   const handleStopButtonPress = () => {
     console.warn("hiiii")
     window.api.send('home:stop-job') // when start button pressed send cpu thread count user wants to use for rendering
-    setJobRunning(false)
+    // setJobRunning(false)
     setLookingForJob(false)
   }
 
@@ -58,6 +59,18 @@ const Home = () => {
     window.api.receive('main:worker-information', (userIdString: string, scoreNumber: number) => {
       setUserId(userIdString)
       setScore(scoreNumber)
+    })
+
+    window.api.receive('main:blender-bin-available', () => {
+      setBlenderAvailable(true)
+    })
+
+    window.api.receive('main:blender-download-finished', () => {
+      // setDownloadingBlender(false)
+    })
+
+    window.api.receive('main:stopped-after-finishing-job', () => {
+      setJobRunning(false)
     })
   },[])
 
@@ -129,7 +142,7 @@ const Home = () => {
             size="lg"
             className="start-job-button"
             onClick={handleStartButtonPress}
-            disabled={jobRunning}
+            disabled={jobRunning || !blenderAvailable}
           >
             Start Job
           </Button>
@@ -138,6 +151,7 @@ const Home = () => {
             size="lg"
             className="stop-job-button"
             onClick={handleStopButtonPress}
+            disabled={!blenderAvailable}
           >
             Stop Job
           </Button>

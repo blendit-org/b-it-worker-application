@@ -100,7 +100,6 @@ function ensureOutputDir(dirPath: string): string {
 }
 
 async function resolveBlenderExe() {
-    const execFileAsync = promisify(execFile);
 
     const userData = app.getPath('userData');
     const blenderDir = path.join(userData, "blendit", "blender");
@@ -117,25 +116,20 @@ async function resolveBlenderExe() {
     );
 
     // check if $userData/blendit/blender/blender.exe exists
-    if (fs.existsSync(blenderExe)) {
-        try {
-            await execFileAsync(blenderExe, ["--version"]);
-            console.warn("Blender is already installed and working");
-            return blenderExe;
-        } catch (error) {
-            console.warn(error + " Blender binary exists but failed to run, redownloading");
-        }
+    if (await checkIfBlenderAvailableLocally()) {
+
+        // else download and extract
+        // console.warn("Downloading blender");
+        // await downloadBlenderArchive(blenderDir);
+        
+        // check if executable runs
+        // await execFileAsync(blenderExe, ["--version"]);
+        // console.warn("Blender installed at:", blenderExe);
+
+        return blenderExe;
+    } else {
+        throw Error("Blender not available");
     }
-
-    // else download and extract
-    console.warn("Downloading blender");
-    await downloadBlenderArchive(blenderDir);
-    
-    // check if executable runs
-    await execFileAsync(blenderExe, ["--version"]);
-    console.warn("Blender installed at:", blenderExe);
-
-    return blenderExe;
 
 }
 
@@ -182,7 +176,7 @@ async function downloadFile(url: string, dest: string) {
     }
 }
 
-async function downloadBlenderArchive(destPath: string) {
+export async function downloadBlenderArchive(destPath: string) {
     let url: string;
     let archiveName: string;
 
@@ -206,6 +200,7 @@ async function downloadBlenderArchive(destPath: string) {
     archivePath = path.join(destPath, archiveName);
 
     console.warn("Downloading blender from " + url + " into " + archivePath);
+    globalMainWindow.webContents.send('main:downloading-blender');
     await downloadFile(url, archivePath); // $userData/blendit/
 
     console.warn("Extracting Blender...");
@@ -214,6 +209,7 @@ async function downloadBlenderArchive(destPath: string) {
     } else {
         await tar.x({file: archivePath, cwd: destPath});
     }
+    globalMainWindow.webContents.send('main:blender-download-finished');
 
     // delete archive
     fs.unlinkSync(archivePath);
@@ -242,12 +238,14 @@ export async function checkIfBlenderAvailableLocally() {
         try {
             await execFileAsync(blenderExe, ["--version"]);
             // window.api.send("main:blender-already-available");
+            globalMainWindow.webContents.send('main:blender-bin-available')
             console.warn("blender available...");
             return true;
             
         } catch (error) {
             console.warn(error + " Blender binary exists but failed to run");
+            return false;
         }
-    }
+    } //else await downloadBlenderArchive(blenderDir);
     return false;
 }
