@@ -1,9 +1,10 @@
 import axios from "axios";
 import keytar from 'keytar'
-import { JobApiResponse } from "../utils";
+import { JobApiResponse, workerHandlerApi } from "../utils";
 import { app } from "electron";
 import path from "path";
 import fs from "fs";
+import { globalMainWindow } from "../main/main";
 
 export async function fetchJob() {
     console.warn("fetch job called...");
@@ -15,7 +16,7 @@ export async function fetchJob() {
         const response = await axios(
             {
                 method: 'post',
-                baseURL: 'http://localhost:4001',
+                baseURL: workerHandlerApi,
 
                 url: '/api/worker/job-request',
                 headers: {
@@ -29,6 +30,7 @@ export async function fetchJob() {
 
         // download project from Google Cloud Storage and store in userData
         if (job.status == "success") {
+            globalMainWindow.webContents.send('worker:got-a-job')
             const userDataPath = ensureProjectFilesDir(job.fileName); // $/userData/blendit/projectFiles/blender_project.blend
             const downloadSuccessful = await downloadFileFromGCS(job.url, userDataPath);
             console.warn("download successful " + downloadSuccessful);
@@ -64,6 +66,7 @@ function ensureProjectFilesDir(fileName: string): string {
 
 async function downloadFileFromGCS(presignedUrl: string, localFilePath: string) {
     try {
+        let prevPercentage: number = -1;
         const response = await axios({
             method: 'get',
             url: presignedUrl,
@@ -71,6 +74,10 @@ async function downloadFileFromGCS(presignedUrl: string, localFilePath: string) 
             onDownloadProgress: (progressEvent) => {
                 const percentCompleted = Math.round(progressEvent.loaded * 100 / (progressEvent.total ? progressEvent.total : 1));
                 console.warn("Project Download progress: ", percentCompleted);
+                if (globalMainWindow && !globalMainWindow.isDestroyed() && prevPercentage != percentCompleted) {
+                    prevPercentage = percentCompleted;
+                    globalMainWindow.webContents.send('worker:download-progress', percentCompleted);
+                }
             }
         });
 

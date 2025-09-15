@@ -1,7 +1,9 @@
 import axios from "axios";
 import keytar from 'keytar';
 import fs from "fs";
-import { JobFileMetadata } from "../utils";
+import { JobFileMetadata, workerHandlerApi } from "../utils";
+
+let tryAgain: boolean = true;
 
 export async function uploadImageToServer(
     imgPath: string,
@@ -9,9 +11,9 @@ export async function uploadImageToServer(
     const token = await keytar.getPassword("org.blendit", "auth-token");
     try {
         const response = await axios({
-            method: 'post',
-            baseURL: 'http://localhost:4001',
-            url: '/api/worker/job-success',
+            method: 'get',
+            baseURL: workerHandlerApi,
+            url: '/api/worker/image-upload',
 
             headers: {
                 Authorization: `Bearer ${token}`
@@ -34,13 +36,34 @@ export async function uploadImageToServer(
                 },
                 data: fileStream,
                 maxBodyLength: Infinity,
-                maxContentLength: Infinity
+                maxContentLength: Infinity,
             });
-            console.warn("Upload Success: ", response);
+            console.warn("Upload Success: ");
+
+            const success = await axios({
+                method: 'post',
+                baseURL: workerHandlerApi,
+                url: '/api/worker/job-success',
+
+                headers: {
+                    Authorization: `Bearer ${token}`
+                },
+
+                data: jobFileMetadata,
+            });
+
+            
+            console.warn("acknowledge success: ");
         }
     } catch (error) {
         console.error("Can not get upload image url: ", error);
+        // try once more to upload
+        if (tryAgain) {
+            await uploadImageToServer(imgPath, jobFileMetadata);
+            tryAgain = false; // risky @pritomash
+        }
         throw error;
+        
     }
 
 }

@@ -7,6 +7,7 @@ import { promisify } from "util";
 import axios from "axios";
 import extract from "extract-zip";
 import * as tar from "tar";
+import { globalMainWindow } from "../main/main";
 
 export async function runBlenderForRenderingImages(
     job: Job,
@@ -15,6 +16,7 @@ export async function runBlenderForRenderingImages(
     
     // Output directory of rendered image
     const userData = app.getPath('userData');
+    ensureOutputDir(path.join(userData, 'blendit'));
     const outDir = ensureOutputDir(path.join(userData, 'blendit', "renderedImages"));
 
     // Where is blender binary?
@@ -44,10 +46,22 @@ export async function runBlenderForRenderingImages(
 
     return new Promise((resolve, reject) => {
         child.stdout.on('data', (buf) => {
-            const line = buf.toString();
-            console.warn('[blender]: ' + line);
+            const line: string = buf.toString();
+            // // console.warn('[blender]: ' + line);
 
-            onProgress({line});
+            const matchSample = line.match(/Sample (\d+)\/(\d+)/)
+            const matchRemainingTime = line.match(/Remaining:([0-9:.]+)/)
+            if (matchSample && matchRemainingTime) {
+                const current = parseInt(matchSample[1], 10);
+                const total = parseInt(matchSample[2], 10);
+                const percent: number = Math.round(current*100/(total!=0 ? total : 1));
+
+                const remainingTime: string = matchRemainingTime[1];
+
+                onProgress({ percent, remainingTime })
+            }
+
+            // onProgress({line});
 
         });
 
@@ -61,6 +75,8 @@ export async function runBlenderForRenderingImages(
 
         child.on('close', (code) => {
             const duration = (Date.now() - startedAt) / 1000;
+            const percent: number = 100;
+            onProgress({ percent })
             if (code === 0) {
                 resolve({ exitCode: code, outputDir: outDir, duration });
             } else {
@@ -91,9 +107,9 @@ async function resolveBlenderExe() {
     const blenderExe = path.join(
         blenderDir,
         process.platform === "win32" 
-            ? "blender-4.5.0-windows-x64"
+            ? "blender-4.5.3-windows-x64"
             : process.platform === "linux"
-                ? "blender-4.5.0-linux-x64" : "blender"
+                ? "blender-4.5.3-linux-x64" : "blender"
         , process.platform === "win32" 
             ? "blender.exe"
             : process.platform === "linux"
@@ -125,15 +141,24 @@ async function resolveBlenderExe() {
 
 async function downloadFile(url: string, dest: string) {
     try {
-        
+        let previousPercentCompleted: number = -1;
         const response = await axios.get(
             url, 
             { 
                 responseType: "stream",
                 onDownloadProgress: (progressEvent) => {
                     if (progressEvent.total != null) {
-                        const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                        const percentCompleted: number = Math.round((progressEvent.loaded * 100) / progressEvent.total);
                         console.warn("blender Download progress: ", percentCompleted);
+                        //ipcRenderer.send('worker:blender-download-progress', percentCompleted);
+                        // send renderer a ipc message about download progress
+                        if (globalMainWindow && !globalMainWindow.isDestroyed() && previousPercentCompleted != percentCompleted) {
+                            previousPercentCompleted = percentCompleted;
+                            globalMainWindow.webContents.send(
+                                "blender:blender-download-progress",
+                                percentCompleted
+                            );
+                        }
                     }
                 }
             }
@@ -163,10 +188,10 @@ async function downloadBlenderArchive(destPath: string) {
 
     if (process.platform === "win32") {
         url = blenderWinDownloadUrl;
-        archiveName = "blender-4.5.0-windows-x64.zip";
+        archiveName = "blender-4.5.3-windows-x64.zip";
     }else if (process.platform === "linux") {
         url = blenderLinuxDownloadUrl;
-        archiveName = "blender.tar.xz";
+        archiveName = "blender-4.5.3-linux-x64.tar.xz";
     } else {
         url = blenderLinuxDownloadUrl;
         archiveName = "blender.zip";
@@ -193,4 +218,36 @@ async function downloadBlenderArchive(destPath: string) {
     // delete archive
     fs.unlinkSync(archivePath);
     console.warn("blender extracted to ", destPath);
+}
+
+export async function checkIfBlenderAvailableLocally() {
+    const execFileAsync = promisify(execFile);
+
+    const userData = app.getPath('userData');
+    const blenderDir = path.join(userData, "blendit", "blender");
+    const blenderExe = path.join(
+        blenderDir,
+        process.platform === "win32" 
+            ? "blender-4.5.3-windows-x64"
+            : process.platform === "linux"
+                ? "blender-4.5.3-linux-x64" : "blender"
+        , process.platform === "win32" 
+            ? "blender.exe"
+            : process.platform === "linux"
+                ? "blender" : "Blender"
+    );
+
+    // check if $userData/blendit/blender/blender.exe exists
+    if (fs.existsSync(blenderExe)) {
+        try {
+            await execFileAsync(blenderExe, ["--version"]);
+            // window.api.send("main:blender-already-available");
+            console.warn("blender available...");
+            return true;
+            
+        } catch (error) {
+            console.warn(error + " Blender binary exists but failed to run");
+        }
+    }
+    return false;
 }

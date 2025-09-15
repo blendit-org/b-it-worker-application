@@ -4,13 +4,13 @@ import { registerWindowIPC } from '@/lib/window/ipcEvents'
 import appIcon from '@/resources/build/icon.png?asset'
 import { pathToFileURL } from 'url'
 
-export function createAppWindow(): void {
+export function createAppWindow() {
   // Register custom protocol for resources
   registerResourcesProtocol()
 
   // Create the main window.
   const mainWindow = new BrowserWindow({
-    width: 900,
+    width: 600,
     height: 670,
     show: false,
     backgroundColor: '#1c1c1c',
@@ -18,8 +18,8 @@ export function createAppWindow(): void {
     frame: false,
     titleBarStyle: 'hiddenInset',
     title: 'blend:it',
-    maximizable: true,
-    resizable: true,
+    maximizable: false,
+    resizable: false,
     webPreferences: {
       preload: join(__dirname, '../preload/preload.js'),
       sandbox: false,
@@ -45,7 +45,8 @@ export function createAppWindow(): void {
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
-  mainWindow.webContents.openDevTools()
+  // mainWindow.webContents.openDevTools()
+  return mainWindow
 }
 
 // Register custom protocol for assets

@@ -1,12 +1,12 @@
 import axios from "axios";
-import { UserInfo } from "../utils";
+import { authApiUrl, UserInfo } from "../utils";
 
 export async function login(userInfo: UserInfo) {
     try {
         const response = await axios(
             {
                 method: 'post',
-                baseURL: 'http://localhost:8005',
+                baseURL: authApiUrl,
 
                 url: '/auth/login',
                 data: {
@@ -22,3 +22,25 @@ export async function login(userInfo: UserInfo) {
         return error.response;
     }
 }
+
+export async function getWorkerInfo(token: string) {
+    try {
+        const response = await axios(
+            {
+                method: 'get',
+                baseURL: authApiUrl,
+
+                url: '/users/me',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+
+            }
+        )
+        return response;
+    } catch (error) {
+        // console.error(error);
+        return error.response;
+    }
+}
+
