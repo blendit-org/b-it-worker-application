@@ -8,6 +8,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 // import { Link, useNavigate } from "react-router"
 import PasswordField from "./PasswordField"
 // import { useLoginMutation } from "@/app/redux/features/auth/auth.api"
+import logo from '@/resources/build/icon.svg'
 
 const LoginSchema = z.object({
     email: z.email(),
@@ -46,6 +47,9 @@ export function LoginForm({
 
     return (
         <div className={cn("flex flex-col gap-6", className)}>
+            <div className="flex flex-col items-center gap-2 text-center">
+            <img className="bg-background" src={logo} alt="blend:it" width={200} height={100} />
+            </div>
             <div className="flex flex-col items-center gap-2 text-center">
                 <h1 className="text-2xl font-bold">Login</h1>
                 <p className="text-muted-foreground text-sm text-balance">
