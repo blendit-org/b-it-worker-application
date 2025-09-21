@@ -37,14 +37,11 @@ This application enables users to join the worker node. Just download the binary
 - 🚀 Electron - Cross-platform desktop application framework
 - ⚛️ React - Component-based UI library
 - 📦 TypeScript - Type-safe JavaScript
-- 🎨 Shadcn UI - Beautiful and accessible component library
 - 🎨 TailwindCSS - Utility-first CSS framework
 - ⚡ Vite - Lightning-fast build tool
-- 🔥 Fast HMR - Hot Module Replacement
 - 🎨 Dark/Light Mode - Built-in theme switching
 - 🪟 Custom Window & Titlebar - Professional-looking window with custom titlebar & file menus
 - 📐 Clean Project Structure - Separation of main and renderer processes
-- 🧩 Path Aliases – Keep your code organized
 - 🛠️ Electron Builder - Configured for packaging applications
 
 <br />
@@ -52,7 +49,7 @@ This application enables users to join the worker node. Just download the binary
 ## Prerequisites
 
 - Node.js (v18 or higher)
-- npm, yarn, pnpm, or bun
+- npm
 
 <br />
 
