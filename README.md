@@ -6,12 +6,22 @@
 </p>
 
 <br/>
-blend:it is a distributed rendering platform. This is a cross-platform (Windows/Linux/MacOS[not tested]) application built on React, Electron and Vite.
+blend:it is a distributed rendering platform. 
+
+
+
+
+
+
+
+This is a cross-platform (Windows/Linux/MacOS[not tested]) application built on React, Electron and Vite.
 This application enables users to join the worker node. Just download the binary, log in and keep an active network connection.
 
 <br/>
 
 <br/>
+
+
 
 <p align="center">
     <img width="601" height="670" alt="image" src="https://github.com/user-attachments/assets/f4278f6a-7035-4515-84e1-a1fd0714fb34" />
