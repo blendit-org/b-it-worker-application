@@ -4,17 +4,9 @@
 <p align="center">
     <img src="resources/build/icon.svg" width="64" />
 </p>
-
+<img width="498" height="281" alt="one-piece-luffy-gear-5" src="https://github.com/user-attachments/assets/0237c5fc-e8bb-40c3-9b95-df02ba497e25" />
 <br/>
-blend:it is a distributed rendering platform. 
-
-
-
-
-
-
-
-This is a cross-platform (Windows/Linux/MacOS[not tested]) application built on React, Electron and Vite.
+blend:it is a distributed rendering platform. This is a cross-platform (Windows/Linux/MacOS[not tested]) application built on React, Electron and Vite.
 This application enables users to join the worker node. Just download the binary, log in and keep an active network connection.
 
 <br/>
